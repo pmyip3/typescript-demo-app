@@ -1,14 +1,27 @@
 import { createAction, createReducer} from '@reduxjs/toolkit'
 import { produce } from 'immer'
 
-export const addItem = createAction<string>('AddItem')
+interface TodoItem {
+    id: string
+    todo: string
+}
+
+interface TodoItemObject {
+    id: string
+    todoItem: TodoItem
+}
+  
+export const addItem = createAction<TodoItemObject>('AddItem')
 export const deleteItem = createAction<string>('DeleteItem')
 
-const reducer = createReducer([], {
-    [addItem.type]: produce((draft, action) => {draft.push(action.payload)}),
+const initialState = {}
+
+const reducer = createReducer(initialState, {
+    [addItem.type]: produce((draft, action) => {
+        draft[action.payload.id] = action.payload
+    }),
     [deleteItem.type]: produce((draft, action) => {
-        const index = draft.findIndex((todo:  string ) => todo === action.payload)
-        if (index !== -1) draft.splice(index, 1)
+        delete draft[action.payload]
     })
 })
 
